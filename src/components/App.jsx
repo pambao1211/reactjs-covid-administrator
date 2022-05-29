@@ -1,22 +1,32 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import AuthProvider from "../contexts/AuthContext";
 import Layout from "./commons/layout";
-import paths from "./configs/paths";
+import PrivateRoute from "./commons/PrivateRoute";
+import paths from "../../src/configs/paths";
 
 const App = () => {
     const renderPaths = () => {
         return paths.map((item) => (
-            <Route key={item.label} path={item.path} element={item.element} />
+            <Route
+                key={item.label}
+                path={item.path}
+                element={
+                    <PrivateRoute path={item.path}>{item.element}</PrivateRoute>
+                }
+            />
         ));
     };
 
     return (
-        <BrowserRouter>
-            <Layout>
-                <Routes>{renderPaths()}</Routes>
-            </Layout>
-        </BrowserRouter>
+        <AuthProvider>
+            <BrowserRouter>
+                <Layout>
+                    <Routes>{renderPaths()}</Routes>
+                </Layout>
+            </BrowserRouter>
+        </AuthProvider>
     );
 };
 
