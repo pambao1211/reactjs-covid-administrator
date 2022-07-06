@@ -7,30 +7,25 @@ import PrivateComponent from "../PrivateComponent";
 
 const Layout = ({ children }) => {
   return (
-    <Box>
+    <Box overflowX="hidden">
       <PrivateComponent>
-        <Header />
+        <Header position="sticky" h="10vh" />
       </PrivateComponent>
-      <Box h="80vh">
-        <Flex h="100%" align="center" justify="center">
-          <Flex
-            h="90%"
-            w="90vw"
-            algins="center"
-            justify="center"
-            borderWidth={1}
-            shadow="md"
-            backgroundColor="#F7AFC"
-          >
-            {children}
-          </Flex>
+      <Flex minH="80vh" w="100vw" justify="center">
+        <Flex
+          minH="80vh"
+          w="90vw"
+          align="center"
+          justify="center"
+          backgroundColor="#F7AFC"
+        >
+          {children}
         </Flex>
-      </Box>
+      </Flex>
       <PrivateComponent>
-        <Footer />
+        <Footer h="10vh" />
       </PrivateComponent>
     </Box>
   );
 };
-
 export default Layout;

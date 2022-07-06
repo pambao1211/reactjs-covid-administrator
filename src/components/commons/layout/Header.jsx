@@ -1,7 +1,6 @@
 import React from "react";
 import {
   Avatar,
-  Box,
   Button,
   Flex,
   HStack,
@@ -10,12 +9,18 @@ import {
   Icon,
 } from "@chakra-ui/react";
 import { Link, useLocation } from "react-router-dom";
-import { GiHospital } from "react-icons/gi";
+import { FaShieldVirus } from "react-icons/fa";
 
-import paths from "../../../configs/paths";
+import { paths } from "../../../configs";
 import { useAuth } from "../../../contexts/AuthContext";
+import {
+  PRIMARY_COLOR,
+  NAVBAR_PATTERN_COLOR,
+  PRIMARY_PATTERN_COLOR,
+  BOX_BORDER_COLOR,
+} from "../../../configs";
 
-const Header = () => {
+const Header = ({ ...props }) => {
   let { pathname } = useLocation();
   const { logout } = useAuth();
 
@@ -24,37 +29,44 @@ const Header = () => {
       .filter((item) => !item.isHidden)
       .map((item) => (
         <Link key={item.label} to={item.path}>
-          <Box
+          <Flex
+            align="center"
             p={3}
             borderRadius="md"
-            _hover={{ bg: "red.500", cursor: "pointer" }}
+            _hover={{ bg: PRIMARY_PATTERN_COLOR, cursor: "pointer" }}
             transition=".15s ease"
-            bgColor={pathname === item.path ? "red.400" : "white"}
+            bgColor={pathname === item.path ? NAVBAR_PATTERN_COLOR : "white"}
           >
-            {item.label}
-          </Box>
+            <Icon as={item.icon} boxSize={6} mr={1} />
+            <Text fontWeight="semibold">{item.label}</Text>
+          </Flex>
         </Link>
       ));
   };
 
   return (
     <Flex
-      h="10vh"
       w="100vw"
       align="center"
       justify="space-between"
       p={5}
       borderWidth={1}
+      borderColor={BOX_BORDER_COLOR}
       shadow="md"
-      // bg="gray.200"
+      {...props}
     >
       <Flex w="100%">
         <Flex align="center" mr="10">
-          <Icon boxSize={10} color="gray.600" as={GiHospital} mr={5} />
+          <Icon
+            boxSize={10}
+            color={PRIMARY_PATTERN_COLOR}
+            as={FaShieldVirus}
+            mr={3}
+          />
           <Text
-            bgGradient={`linear(to-r, red.500 , red.300)`}
+            bgGradient={`linear(to-r, ${PRIMARY_COLOR}.500 , ${PRIMARY_COLOR}.300)`}
             bgClip="text"
-            fontSize="3xl"
+            fontSize="2xl"
             fontWeight="bold"
             textAlign="center"
             letterSpacing="tight"
@@ -65,7 +77,11 @@ const Header = () => {
         <HStack spacing={10}>{renderNavItems()}</HStack>
       </Flex>
       <Stack direction="row" align="center" spacing={5}>
-        <Button align="center" colorScheme="red" onClick={() => logout()}>
+        <Button
+          align="center"
+          colorScheme={PRIMARY_COLOR}
+          onClick={() => logout()}
+        >
           Logout
         </Button>
         <Avatar

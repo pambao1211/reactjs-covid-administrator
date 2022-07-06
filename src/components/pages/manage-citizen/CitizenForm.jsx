@@ -1,24 +1,33 @@
 import React, { useRef } from "react";
 import _ from "lodash";
 import { Formik, Form, Field } from "formik";
-import { Box, Button, Flex, Grid, GridItem, Input } from "@chakra-ui/react";
+import { Button, Flex, Grid, GridItem, Heading } from "@chakra-ui/react";
 
+import { initialCitizenFormValues, citizenFormConfigs } from "../../../configs";
 import FormInput from "../../commons/FormInput";
+import { PRIMARY_COLOR, TITLE_INFO_COLOR } from "../../../configs";
 
 const renderField = (props) => {
   return <FormInput {...props} />;
 };
 
-const initialValues = {
-  firstName: "",
-  lastName: "",
-  dob: "",
-  idNumber: "",
-  address: "",
-  doses: "",
+const renderFields = () => {
+  return citizenFormConfigs.map((field) => {
+    const { fieldType = "text", name, label } = field;
+    return (
+      <GridItem colSpan={1}>
+        <Field
+          name={field.name}
+          label={field.label}
+          type={fieldType}
+          component={renderField}
+        />
+      </GridItem>
+    );
+  });
 };
 
-const CitizenForm = ({ handleChange }) => {
+const CitizenForm = ({ handleChange, handleSubmit }) => {
   const ref = useRef(null);
 
   const validate = (values) => {
@@ -29,72 +38,32 @@ const CitizenForm = ({ handleChange }) => {
     return error;
   };
 
-  const onSubmit = (values) => {
-    console.log(values);
-  };
-
   return (
-    <Flex h="100%" minW="60vw" align="center" justify="center">
-      <Formik
-        innerRef={ref}
-        validate={validate}
-        onSubmit={onSubmit}
-        initialValues={initialValues}
-      >
-        <Form
-          onChange={(e) => {
-            console.log(e);
-            handleChange(e.target.name, e.target.value);
-          }}
+    <Flex w="60%" direction="column" align="center" justify="center">
+      <Flex h="20%">
+        <Heading color={TITLE_INFO_COLOR}>Add Citizen</Heading>
+      </Flex>
+      <Flex w="100%" align="center" justify="center">
+        <Formik
+          innerRef={ref}
+          validate={validate}
+          onSubmit={handleSubmit}
+          initialValues={initialCitizenFormValues}
         >
-        
-          <Grid h="100%" templateColumns="repeat(2, 1fr)" gap={4}>
-            <GridItem colSpan={1}>
-              <Field
-                label="First name"
-                name="firstName"
-                component={renderField}
-              />
-            </GridItem>
-            <GridItem colSpan={1}>
-              <Field
-                label="Last name"
-                name="lastName"
-                component={renderField}
-              />
-            </GridItem>
-            <GridItem colSpan={1}>
-              <Field
-                label="Date of birth"
-                name="dob"
-                type="date"
-                component={FormInput}
-              />
-            </GridItem>
-            <GridItem colSpan={1}>
-              <Field
-                label="Identification number"
-                name="idNumber"
-                component={FormInput}
-              />
-            </GridItem>
-            <GridItem colSpan={1}>
-              <Field label="Address" name="address" component={FormInput} />
-            </GridItem>
-            <GridItem colSpan={1}>
-              <Field
-                label="Doses"
-                name="doses"
-                type="number"
-                component={renderField}
-              />
-            </GridItem>
-          </Grid>
-          <Button colorScheme="red" w="100%" type="submit">
-            Submit
-          </Button>
-        </Form>
-      </Formik>
+          <Form
+            onChange={(e) => {
+              handleChange(e.target.name, e.target.value);
+            }}
+          >
+            <Grid h="100%" templateColumns="repeat(2, 1fr)" gap={4}>
+              {renderFields()}
+            </Grid>
+            <Button mt={5} colorScheme={PRIMARY_COLOR} w="100%" type="submit">
+              Submit
+            </Button>
+          </Form>
+        </Formik>
+      </Flex>
     </Flex>
   );
 };
