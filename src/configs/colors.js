@@ -1,7 +1,7 @@
 const BASE_INFO_COLOR = "gray";
 const BASE_SCHEME = 400;
 const LIGHT_SCHEME = BASE_SCHEME - 100;
-export const PRIMARY_COLOR = "pink";
+export const PRIMARY_COLOR = "red";
 export const PRIMARY_PATTERN_COLOR = `${PRIMARY_COLOR}.${BASE_SCHEME}`;
 export const NAVBAR_PATTERN_COLOR = `${PRIMARY_COLOR}.${LIGHT_SCHEME}`;
 export const PRIMARY_BACKGROUND_COLOR = `${PRIMARY_COLOR}.100`;

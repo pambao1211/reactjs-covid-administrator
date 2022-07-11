@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import _ from "lodash";
 import {
   Flex,
@@ -9,6 +9,7 @@ import {
   Divider,
   Icon,
 } from "@chakra-ui/react";
+import { faker } from "@faker-js/faker";
 
 import {
   PRIMARY_PATTERN_COLOR,
@@ -16,10 +17,11 @@ import {
   DETAIL_INFO_COLOR,
   BOX_BORDER_COLOR,
 } from "../../../configs";
+import { renderGender, toLocaleDate } from "../../../utils";
 
 const field = ({ label, icon, value }) => {
   return (
-    <>
+    <React.Fragment key={label}>
       <Flex align="center">
         <Icon as={icon} boxSize={6} mr={3} color={PRIMARY_PATTERN_COLOR} />
         <Flex key={label} w="100%">
@@ -32,16 +34,32 @@ const field = ({ label, icon, value }) => {
         </Flex>
       </Flex>
       <Divider />
-    </>
+    </React.Fragment>
   );
 };
 
-const InformationCard = ({ formValues }) => {
+const InformationCard = ({ formValues, avt, setAvt }) => {
+  useEffect(() => {
+    setAvt(faker.internet.avatar());
+  }, []);
+
   const renderFields = () => {
     let result = [];
-    _.forOwn(formValues, (value, key) => {
-      console.log(value);
-      result.push(field(value));
+    _.forOwn(formValues, (fieldInfo, key) => {
+      switch (key) {
+        case "dob":
+          const dobVal = fieldInfo.value;
+          fieldInfo = { ...fieldInfo, value: toLocaleDate(dobVal) };
+          result.push(field(fieldInfo));
+          break;
+        case "gender":
+          const genderVal = fieldInfo.value;
+          fieldInfo = { ...fieldInfo, value: renderGender(genderVal) };
+          result.push(field(fieldInfo));
+          break;
+        default:
+          result.push(field(fieldInfo));
+      }
     });
     return result;
   };
@@ -60,7 +78,7 @@ const InformationCard = ({ formValues }) => {
         Profile Preview
       </Heading>
 
-      <Avatar mb={5} size="xl" />
+      <Avatar mb={5} size="xl" src={avt} />
 
       <Stack w="100%" spacing={5}>
         {renderFields()}

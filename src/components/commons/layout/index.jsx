@@ -15,7 +15,7 @@ const Layout = ({ children }) => {
         <Flex
           minH="80vh"
           w="90vw"
-          align="center"
+          // align="center"
           justify="center"
           backgroundColor="#F7AFC"
         >

@@ -4,7 +4,25 @@ import {
   FormErrorMessage,
   FormLabel,
   Input,
+  Select,
 } from "@chakra-ui/react";
+
+const renderInput = (field, rest) => {
+  switch (rest.type) {
+    case "select":
+      return (
+        <Select {...field}>
+          {rest.options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </Select>
+      );
+    default:
+      return <Input {...field} {...rest} />;
+  }
+};
 
 const FormInput = ({ field, form, label, ...rest }) => {
   const { name } = field;
@@ -12,7 +30,7 @@ const FormInput = ({ field, form, label, ...rest }) => {
   return (
     <FormControl isInvalid={error}>
       <FormLabel>{label}</FormLabel>
-      <Input {...field} {...rest} />
+      {renderInput(field, rest)}
       <FormErrorMessage>{form.errors[name]}</FormErrorMessage>
     </FormControl>
   );

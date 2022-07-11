@@ -1,10 +1,11 @@
-import { keyBy, mapValues } from "lodash";
-import { BsPersonBadge } from "react-icons/bs";
+import { BsPersonBadge, BsGenderAmbiguous } from "react-icons/bs";
 import { MdFamilyRestroom } from "react-icons/md";
 import { FaBirthdayCake } from "react-icons/fa";
 import { HiOutlineIdentification } from "react-icons/hi";
 import { FiHome } from "react-icons/fi";
 import { GiLoveInjection } from "react-icons/gi";
+
+import { GENDER_MALE, GENDER_FEMALE } from "../constant";
 
 export const citizenFormConfigs = [
   {
@@ -17,6 +18,23 @@ export const citizenFormConfigs = [
     name: "lastName",
     label: "Last name",
     icon: MdFamilyRestroom,
+  },
+  {
+    name: "gender",
+    label: "Gender",
+    icon: BsGenderAmbiguous,
+    defaultValue: GENDER_MALE,
+    fieldType: "select",
+    options: [
+      {
+        label: "Male",
+        value: GENDER_MALE,
+      },
+      {
+        label: "Female",
+        value: GENDER_FEMALE,
+      },
+    ],
   },
   {
     name: "dob",
@@ -41,15 +59,3 @@ export const citizenFormConfigs = [
     fieldType: "number",
   },
 ];
-
-export const initialCitizenFormValues = mapValues(
-  keyBy(citizenFormConfigs, (field) => field.name),
-  ({ defaultValue = "" }) => defaultValue
-);
-
-export const citizenFormFields = mapValues(
-  keyBy(citizenFormConfigs, (field) => field.name),
-  ({ label, icon, defaultValue }) => {
-    return { label, icon, value: defaultValue || "" };
-  }
-);
