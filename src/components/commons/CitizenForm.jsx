@@ -3,13 +3,13 @@ import _ from "lodash";
 import { Formik, Form, Field } from "formik";
 import { Button, Flex, Grid, GridItem, Heading } from "@chakra-ui/react";
 
-import { citizenFormConfigs } from "../../../configs";
-import FormInput from "../../commons/FormInput";
+import { citizenFormConfigs } from "../../configs";
+import FormInput from "./FormInput";
 import {
   PRIMARY_COLOR,
   TITLE_INFO_COLOR,
   initialCitizenFormValues,
-} from "../../../configs";
+} from "../../configs";
 
 const renderField = (props) => {
   return <FormInput {...props} />;

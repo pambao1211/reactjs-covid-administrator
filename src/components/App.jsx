@@ -5,16 +5,9 @@ import AuthProvider from "../contexts/AuthContext";
 import Layout from "./commons/layout";
 import PrivateRoute from "./commons/PrivateRoute";
 import { paths } from "../configs";
+import ModalProvider from "../contexts/modal-context";
 
 const App = () => {
-  const a = [
-    "asdasd",
-    "asdasdasd",
-    "dasdasda",
-    "dasdasda",
-    "asdasd",
-    "sadsdasdasdasdasd",
-  ];
   const renderPaths = () => {
     return paths.map((item) => (
       <Route
@@ -27,11 +20,13 @@ const App = () => {
 
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Layout>
-          <Routes>{renderPaths()}</Routes>
-        </Layout>
-      </BrowserRouter>
+      <ModalProvider>
+        <BrowserRouter>
+          <Layout>
+            <Routes>{renderPaths()}</Routes>
+          </Layout>
+        </BrowserRouter>
+      </ModalProvider>
     </AuthProvider>
   );
 };

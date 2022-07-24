@@ -9,18 +9,18 @@ import reducers from "./redux/reducers";
 import App from "./components/App";
 
 const store = configureStore({
-    reducer: reducers,
-    middleware: [thunk],
-    devTools: true,
+  reducer: reducers,
+  middleware: [thunk],
+  devTools: true,
 });
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-    <React.StrictMode>
-        <Provider store={store}>
-            <ChakraProvider>
-                <App />
-            </ChakraProvider>
-        </Provider>
-    </React.StrictMode>
+  <React.StrictMode>
+    <Provider store={store}>
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    </Provider>
+  </React.StrictMode>
 );

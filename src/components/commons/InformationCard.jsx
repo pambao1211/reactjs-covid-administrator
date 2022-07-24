@@ -16,8 +16,8 @@ import {
   TITLE_INFO_COLOR,
   DETAIL_INFO_COLOR,
   BOX_BORDER_COLOR,
-} from "../../../configs";
-import { renderGender, toLocaleDate } from "../../../utils";
+} from "../../configs";
+import { renderGender, toLocaleDate } from "../../utils";
 
 const field = ({ label, icon, value }) => {
   return (

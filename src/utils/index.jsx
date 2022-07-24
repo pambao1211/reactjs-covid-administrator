@@ -18,7 +18,7 @@ const convertStatus = (doses) => {
   }
 };
 
-export const getTableData = (citizens) => {
+export const getTableData = (citizens, handleDelete, handleNavigate) => {
   const tableData = citizens.map((citizen, index) => ({
     avt: <Avatar src={citizen.avt} />,
     idNumber: citizen.idNumber,
@@ -33,18 +33,27 @@ export const getTableData = (citizens) => {
         <Button
           mr={3}
           colorScheme="green"
-          onClick={() => console.log("Hello World")}
+          onClick={() => {
+            handleNavigate(citizen.id);
+          }}
         >
           <Icon boxSize={3} as={MdOpenInNew} />
         </Button>
         <Button
           mr={3}
           colorScheme="blue"
-          onClick={() => console.log("Hello World")}
+          onClick={() => {
+            handleNavigate(citizen.id);
+          }}
         >
           <Icon boxSize={3} as={BsPen} />
         </Button>
-        <Button colorScheme="red" onClick={() => console.log("Hello World")}>
+        <Button
+          colorScheme="red"
+          onClick={() => {
+            handleDelete(citizen.id, citizen.idNumber);
+          }}
+        >
           <Icon boxSize={3} as={BsTrash} />
         </Button>
       </Flex>
