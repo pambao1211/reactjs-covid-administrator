@@ -1,7 +1,4 @@
-import { keyBy, mapValues } from "lodash";
-import { citizenFormConfigs } from "./citizenForm";
-
-export const tableColumns = [
+export const citizenTableColumns = [
   {
     Header: "Avatar",
     accessor: "avt",
@@ -35,23 +32,7 @@ export const tableColumns = [
     accessor: "address",
   },
   {
-    Header: "Action",
-    accessor: "action",
+    Header: "Actions",
+    accessor: "actions",
   },
 ];
-
-export const initialCitizenFormValues = mapValues(
-  keyBy(citizenFormConfigs, (field) => field.name),
-  ({ defaultValue = "" }) => defaultValue
-);
-
-export const citizenFormFields = mapValues(
-  keyBy(citizenFormConfigs, (field) => field.name),
-  ({ label, icon, defaultValue }) => {
-    return {
-      label,
-      icon,
-      value: defaultValue || defaultValue === 0 ? defaultValue : "",
-    };
-  }
-);

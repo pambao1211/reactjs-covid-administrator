@@ -1,9 +1,18 @@
-import { Avatar, Badge, Button, Flex, Icon } from "@chakra-ui/react";
-import { BsPen, BsTrash, BsGenderMale, BsGenderFemale } from "react-icons/bs";
+import { Avatar, Badge, Button, HStack, Icon } from "@chakra-ui/react";
+import { BsGenderFemale, BsGenderMale, BsPen, BsTrash } from "react-icons/bs";
 import { MdOpenInNew } from "react-icons/md";
 
-import { GENDER_MALE, GENDER_FEMALE } from "../constant";
-import { PRIMARY_COLOR } from "../configs";
+import {
+  DASH_BOARD,
+  DETAIL_CITIZEN,
+  DETAIL_VACCINATION,
+  EDIT_CITIZEN,
+  EDIT_VACCINATION,
+  GENDER_FEMALE,
+  GENDER_MALE,
+} from "../constant";
+import { paths, PRIMARY_COLOR } from "../configs";
+import { keyBy, mapValues } from "lodash";
 
 const convertStatus = (doses) => {
   switch (doses) {
@@ -18,8 +27,8 @@ const convertStatus = (doses) => {
   }
 };
 
-export const getTableData = (citizens, handleDelete, handleNavigate) => {
-  const tableData = citizens.map((citizen, index) => ({
+export const getCitizenTableData = (citizens, handleDelete, handleNavigate) => {
+  return citizens.map((citizen) => ({
     avt: <Avatar src={citizen.avt} />,
     idNumber: citizen.idNumber,
     firstName: citizen.firstName,
@@ -28,22 +37,20 @@ export const getTableData = (citizens, handleDelete, handleNavigate) => {
     dob: toLocaleDate(citizen.dob),
     doses: convertStatus(citizen.doses),
     address: citizen.address,
-    action: (
-      <Flex>
+    actions: (
+      <HStack spacing={3}>
         <Button
-          mr={3}
           colorScheme="green"
           onClick={() => {
-            handleNavigate(citizen.id);
+            handleNavigate(DETAIL_CITIZEN, citizen.id);
           }}
         >
           <Icon boxSize={3} as={MdOpenInNew} />
         </Button>
         <Button
-          mr={3}
           colorScheme="blue"
           onClick={() => {
-            handleNavigate(citizen.id);
+            handleNavigate(EDIT_CITIZEN, citizen.id);
           }}
         >
           <Icon boxSize={3} as={BsPen} />
@@ -56,10 +63,59 @@ export const getTableData = (citizens, handleDelete, handleNavigate) => {
         >
           <Icon boxSize={3} as={BsTrash} />
         </Button>
-      </Flex>
+      </HStack>
     ),
   }));
-  return tableData;
+};
+
+export const getVaccineTableData = (vaccines, handleNavigate) => {
+  return vaccines.map((vaccine) => ({
+    img: <Avatar src={vaccine.img} />,
+    id: vaccine.id,
+    vaccineName: vaccine.vaccineName,
+    code: vaccine.code,
+    origin: vaccine.origin,
+    actions: (
+      <HStack spacing={3}>
+        <Button
+          colorScheme="green"
+          onClick={() => {
+            handleNavigate(DETAIL_VACCINATION, vaccine.id);
+          }}
+        >
+          <Icon boxSize={3} as={MdOpenInNew} />
+        </Button>
+        <Button
+          colorScheme="blue"
+          onClick={() => {
+            handleNavigate(EDIT_VACCINATION, citizen.id);
+          }}
+        >
+          <Icon boxSize={3} as={BsPen} />
+        </Button>
+      </HStack>
+    ),
+  }));
+};
+
+export const getInitialFormValues = (formConfigs) => {
+  return mapValues(
+    keyBy(formConfigs, (field) => field.name),
+    ({ defaultValue = "" }) => defaultValue
+  );
+};
+
+export const getFormFields = (formConfigs) => {
+  return mapValues(
+    keyBy(formConfigs, (field) => field.name),
+    ({ label, icon, defaultValue }) => {
+      return {
+        label,
+        icon,
+        value: defaultValue || defaultValue === 0 ? defaultValue : "",
+      };
+    }
+  );
 };
 
 export const renderGender = (value) => {
@@ -82,4 +138,12 @@ export const renderGender = (value) => {
 export const toLocaleDate = (date) => {
   if (!date) return "";
   return new Intl.DateTimeFormat("vi-VN").format(new Date(date));
+};
+
+export const isPathMatch = (currentPath, pathItem) => {
+  const homePath = paths[DASH_BOARD].path;
+  if (currentPath !== homePath && pathItem === homePath) {
+    return false;
+  }
+  return currentPath.includes(pathItem);
 };

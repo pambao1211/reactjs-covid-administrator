@@ -10,6 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { Link, useLocation } from "react-router-dom";
 import { FaShieldVirus } from "react-icons/fa";
+import _ from "lodash";
 import { faker } from "@faker-js/faker";
 
 import { paths } from "../../../configs";
@@ -20,13 +21,14 @@ import {
   PRIMARY_PATTERN_COLOR,
   BOX_BORDER_COLOR,
 } from "../../../configs";
+import { isPathMatch } from "../../../utils";
 
 const Header = ({ ...props }) => {
   let { pathname } = useLocation();
   const { logout } = useAuth();
 
   const renderNavItems = () => {
-    return paths
+    return _.values(paths)
       .filter((item) => !item.isHidden)
       .map((item) => (
         <Link key={item.label} to={item.path}>
@@ -36,7 +38,9 @@ const Header = ({ ...props }) => {
             borderRadius="md"
             _hover={{ bg: PRIMARY_PATTERN_COLOR, cursor: "pointer" }}
             transition=".15s ease"
-            bgColor={pathname === item.path ? NAVBAR_PATTERN_COLOR : "white"}
+            bgColor={
+              isPathMatch(pathname, item.path) ? NAVBAR_PATTERN_COLOR : "white"
+            }
           >
             <Icon as={item.icon} boxSize={6} mr={1} />
             <Text fontWeight="semibold">{item.label}</Text>

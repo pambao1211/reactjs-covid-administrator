@@ -3,37 +3,40 @@ import _ from "lodash";
 import { Formik, Form, Field } from "formik";
 import { Button, Flex, Grid, GridItem, Heading } from "@chakra-ui/react";
 
-import { citizenFormConfigs } from "../../configs";
 import FormInput from "./FormInput";
-import {
-  PRIMARY_COLOR,
-  TITLE_INFO_COLOR,
-  initialCitizenFormValues,
-} from "../../configs";
+import { PRIMARY_COLOR, TITLE_INFO_COLOR } from "../../configs";
 
 const renderField = (props) => {
   return <FormInput {...props} />;
 };
 
-const renderFields = () => {
-  return citizenFormConfigs.map((field) => {
-    const { name, label, fieldType = "text", options = [] } = field;
-    return (
-      <GridItem colSpan={1}>
-        <Field
-          name={name}
-          label={label}
-          type={fieldType}
-          options={options}
-          component={renderField}
-        />
-      </GridItem>
-    );
-  });
-};
-
-const CitizenForm = ({ handleChange, handleSubmit, isLoading }) => {
+const GenericForm = ({
+  initialFormValues,
+  handleChange,
+  handleSubmit,
+  isLoading,
+  heading,
+  formConfigs,
+}) => {
   const ref = useRef(null);
+
+  const renderFields = () => {
+    console.log(formConfigs);
+    return formConfigs.map((field) => {
+      const { name, label, fieldType = "text", options = [] } = field;
+      return (
+        <GridItem colSpan={1}>
+          <Field
+            name={name}
+            label={label}
+            type={fieldType}
+            options={options}
+            component={renderField}
+          />
+        </GridItem>
+      );
+    });
+  };
 
   const validate = (values) => {
     const error = {};
@@ -46,14 +49,14 @@ const CitizenForm = ({ handleChange, handleSubmit, isLoading }) => {
   return (
     <Flex w="60%" direction="column" align="center" justify="center">
       <Flex h="20%">
-        <Heading color={TITLE_INFO_COLOR}>Add Citizen</Heading>
+        <Heading color={TITLE_INFO_COLOR}>{heading}</Heading>
       </Flex>
       <Flex w="100%" align="center" justify="center">
         <Formik
           innerRef={ref}
           validate={validate}
           onSubmit={handleSubmit}
-          initialValues={initialCitizenFormValues}
+          initialValues={initialFormValues}
         >
           <Form
             onChange={(e) => {
@@ -79,4 +82,4 @@ const CitizenForm = ({ handleChange, handleSubmit, isLoading }) => {
   );
 };
 
-export default CitizenForm;
+export default GenericForm;

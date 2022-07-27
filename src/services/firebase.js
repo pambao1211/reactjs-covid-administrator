@@ -1,11 +1,13 @@
 import {
   addDoc,
   collection,
-  getDocs,
-  query,
-  where,
   deleteDoc,
   doc,
+  getDoc,
+  getDocs,
+  query,
+  setDoc,
+  where,
 } from "firebase/firestore";
 import _ from "lodash";
 
@@ -33,11 +35,29 @@ const fetchCitizensByFirstName = async (searchTerm) => {
   return citizens;
 };
 
+const fetchVaccinesByName = async (searchTerm) => {
+  const vaccines = [];
+  const q = query(
+    collection(db, "vaccines"),
+    where("vaccineName", "==", searchTerm)
+  );
+  const rs = await getDocs(q);
+  rs.forEach((vaccine) => vaccines.push({ ...vaccine.data(), id: vaccine.id }));
+  return vaccines;
+};
+
+const fetchVaccinesByCode = async (searchTerm) => {
+  const vaccines = [];
+  const q = query(collection(db, "vaccines"), where("code", "==", searchTerm));
+  const rs = await getDocs(q);
+  rs.forEach((vaccine) => vaccines.push({ ...vaccine.data(), id: vaccine.id }));
+  return vaccines;
+};
+
 export const fetchCitizenById = async (citizenId) => {
   const docRef = doc(db, "citizens", citizenId);
-  const citizen = await getDocs(docRef);
+  const citizen = await getDoc(docRef);
   if (citizen.exists()) {
-    console.log(citizen.data());
     return citizen.data();
   }
   return null;
@@ -59,10 +79,42 @@ export const fetchCitizens = async () => {
 export const fetchCitizensByIdOrName = async (searchTerm) => {
   const idResults = await fetchCitizensById(searchTerm);
   const firstNameResults = await fetchCitizensByFirstName(searchTerm);
-  const results = _.unionWith(idResults, firstNameResults, _.isEqual);
-  return results;
+  return _.unionWith(idResults, firstNameResults, _.isEqual);
+};
+
+export const editCitizen = async (citizenId, editedValues) => {
+  const citizenRef = doc(db, "citizens", citizenId);
+  await setDoc(citizenRef, editedValues, { merge: true });
 };
 
 export const deleteCitizen = async (citizenId) => {
   await deleteDoc(doc(db, "citizens", citizenId));
+};
+
+export const fetchVaccines = async () => {
+  const vaccines = [];
+  const rs = await getDocs(collection(db, "vaccines"));
+  rs.forEach((vaccine) => {
+    vaccines.push({ ...vaccine.data(), id: vaccine.id });
+  });
+  return vaccines;
+};
+
+export const fetchVaccineById = async (citizenId) => {
+  const docRef = doc(db, "vaccines", citizenId);
+  const vaccine = await getDoc(docRef);
+  if (vaccine.exists()) {
+    return vaccine.data();
+  }
+  return null;
+};
+
+export const fetchVaccineByNameOrCode = async (searchTerm) => {
+  const nameResults = await fetchVaccinesByName(searchTerm);
+  const codeResults = await fetchVaccinesByCode(searchTerm);
+  return _.unionWith(nameResults, codeResults, _.isEqual);
+};
+
+export const addVaccine = async (vaccine) => {
+  return await addDoc(collection(db, "vaccines"), vaccine);
 };

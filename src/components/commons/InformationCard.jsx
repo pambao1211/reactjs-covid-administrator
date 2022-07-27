@@ -38,10 +38,13 @@ const field = ({ label, icon, value }) => {
   );
 };
 
-const InformationCard = ({ formValues, avt, setAvt }) => {
+const InformationCard = ({ formValues, avt, setAvt, isSingleView = false }) => {
   useEffect(() => {
+    if (avt) {
+      return;
+    }
     setAvt(faker.internet.avatar());
-  }, []);
+  }, [avt]);
 
   const renderFields = () => {
     let result = [];
@@ -70,8 +73,8 @@ const InformationCard = ({ formValues, avt, setAvt }) => {
       p={5}
       align="center"
       h="100%"
-      w="40%"
-      borderLeftWidth={3}
+      w={isSingleView ? "50%" : "40%"}
+      borderLeftWidth={isSingleView ? 0 : 3}
       borderColor={BOX_BORDER_COLOR}
     >
       <Heading color={TITLE_INFO_COLOR} mb={5}>

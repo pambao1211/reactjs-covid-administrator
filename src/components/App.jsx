@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import _ from "lodash";
 
 import AuthProvider from "../contexts/AuthContext";
 import Layout from "./commons/layout";
@@ -9,7 +10,7 @@ import ModalProvider from "../contexts/modal-context";
 
 const App = () => {
   const renderPaths = () => {
-    return paths.map((item) => (
+    return _.map(_.values(paths), (item) => (
       <Route
         key={item.label}
         path={item.path}
