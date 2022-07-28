@@ -16,7 +16,7 @@ const AddVaccination = () => {
   const toast = useToastCustom();
   const [fields, setFields] = useState(getFormFields(vaccinationFormConfigs));
   const [isLoading, setIsLoading] = useState(false);
-  const [img, setImg] = useState(faker.image.business());
+  const [img, setImg] = useState(faker.image.avatar());
 
   const handleChange = (keyChange, value) => {
     setFields((pre) => {

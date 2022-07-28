@@ -72,14 +72,14 @@ export const paths = {
   },
   [EDIT_VACCINATION]: {
     label: "Edit Vaccination",
-    path: "/manageVaccination/editVaccination/:vaccinationId",
+    path: "/manageVaccination/editVaccination/:vaccineId",
     pathWithNoParams: "/manageVaccination/editVaccination",
     element: <EditVaccination />,
     isHidden: true,
   },
   [DETAIL_VACCINATION]: {
     label: "Detail Vaccination",
-    path: "/manageVaccination/detailVaccination/:vaccinationId",
+    path: "/manageVaccination/detailVaccination/:vaccineId",
     pathWithNoParams: "/manageVaccination/detailVaccination",
     element: <DetailVaccination />,
     isHidden: true,

@@ -100,8 +100,8 @@ export const fetchVaccines = async () => {
   return vaccines;
 };
 
-export const fetchVaccineById = async (citizenId) => {
-  const docRef = doc(db, "vaccines", citizenId);
+export const fetchVaccineById = async (vaccineId) => {
+  const docRef = doc(db, "vaccines", vaccineId);
   const vaccine = await getDoc(docRef);
   if (vaccine.exists()) {
     return vaccine.data();
@@ -115,6 +115,15 @@ export const fetchVaccineByNameOrCode = async (searchTerm) => {
   return _.unionWith(nameResults, codeResults, _.isEqual);
 };
 
+export const editVaccine = async (vaccineId, editedValues) => {
+  const citizenRef = doc(db, "vaccines", vaccineId);
+  await setDoc(citizenRef, editedValues, { merge: true });
+};
+
 export const addVaccine = async (vaccine) => {
   return await addDoc(collection(db, "vaccines"), vaccine);
+};
+
+export const deleteVaccination = async (vaccineId) => {
+  await deleteDoc(doc(db, "vaccines", vaccineId));
 };

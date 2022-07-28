@@ -159,8 +159,7 @@ const ManageCitizen = () => {
             </InputGroup>
           </Flex>
         </Flex>
-
-        
+        <Divider mb={5} color={BOX_BORDER_COLOR} />
         {renderContent()}
       </Box>
     </Box>

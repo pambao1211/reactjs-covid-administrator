@@ -1,22 +1,43 @@
 import React, { useEffect, useState } from "react";
-import { Flex, Box, Heading } from "@chakra-ui/react";
+import {
+  Flex,
+  Box,
+  Heading,
+  Button,
+  Icon,
+  InputGroup,
+  Input,
+  InputRightElement,
+  Divider,
+} from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 import { Table } from "react-chakra-pagination";
+import { HiOutlineDocumentAdd } from "react-icons/hi";
 
 import { useModal } from "../../../contexts/modal-context";
 import useToastCustom from "../../../hooks/useToast";
 import {
+  deleteCitizen,
+  deleteVaccination,
   fetchVaccineByNameOrCode,
   fetchVaccines,
 } from "../../../services/firebase";
-import { paths, PRIMARY_COLOR } from "../../../configs";
+import {
+  BOX_BORDER_COLOR,
+  paths,
+  PRIMARY_COLOR,
+  TITLE_INFO_COLOR,
+} from "../../../configs";
 import { getVaccineTableData } from "../../../utils";
 import CustomSpinner from "../../commons/CustomSpinner";
 import { vaccinationTableColumns } from "../../../configs/vaccinationTable";
 import { AiOutlineInbox } from "react-icons/ai";
+import { ADD_VACCINATION } from "../../../constant";
+import { BsSearch } from "react-icons/bs";
 
 const ManageVaccination = () => {
   const navigate = useNavigate();
+  const { openModal, onClose, setIsActionLoading } = useModal();
   const toast = useToastCustom();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -36,7 +57,9 @@ const ManageVaccination = () => {
   const fetchAll = async () => {
     setIsLoading(true);
     const vaccinations = await fetchVaccines();
-    setTableData(getVaccineTableData(vaccinations, handleNavigate));
+    setTableData(
+      getVaccineTableData(vaccinations, handleDelete, handleNavigate)
+    );
     setIsLoading(false);
   };
 
@@ -47,8 +70,48 @@ const ManageVaccination = () => {
   const fetchWithSearchTerm = async () => {
     setIsLoading(true);
     const vaccinations = await fetchVaccineByNameOrCode(searchTerm);
-    setTableData(getVaccineTableData(vaccinations, handleNavigate));
+    setTableData(
+      getVaccineTableData(vaccinations, handleDelete, handleNavigate)
+    );
     setIsLoading(false);
+  };
+
+  const reloadTable = () => {
+    if (searchTerm === "") {
+      fetchAll();
+      return;
+    }
+    fetchWithSearchTerm();
+  };
+
+  const handleTermChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleDelete = (vaccineId, vaccineCode) => {
+    openModal({
+      header: "Delete vaccination",
+      body: `Are you sure to delete citizen with code ${vaccineCode}?`,
+      actionFunc: async () => {
+        setIsActionLoading(true);
+        try {
+          await deleteVaccination(vaccineId);
+          toast({
+            title: "Deleted successfully",
+            description: "Vaccination has been deleted",
+          });
+          reloadTable();
+        } catch (e) {
+          toast({
+            title: "Deleted failed",
+            description: "Failed to delete vaccine",
+          });
+        } finally {
+          setIsActionLoading(false);
+          onClose();
+        }
+      },
+    });
   };
 
   const renderContent = () => {
@@ -76,7 +139,36 @@ const ManageVaccination = () => {
     );
   };
 
-  return <Box>{renderContent()}</Box>;
+  return (
+    <Box w="100%">
+      <Box>
+        <Flex py={5} px={10} justify="space-between" align="center">
+          <Heading color={TITLE_INFO_COLOR}>Vaccination Table</Heading>
+          <Flex w="40%" justify="end">
+            <Link to={paths[ADD_VACCINATION].path}>
+              <Button colorScheme={PRIMARY_COLOR}>
+                <Icon mr={1} as={HiOutlineDocumentAdd} boxSize={5} />
+                Add Vaccination
+              </Button>
+            </Link>
+            <InputGroup ml={3} w="50%">
+              <Input
+                placeholder="Search by name or code"
+                value={searchTerm}
+                onChange={handleTermChange}
+              />
+              <InputRightElement
+                pointerEvents="none"
+                children={<Icon color={PRIMARY_COLOR} as={BsSearch} />}
+              />
+            </InputGroup>
+          </Flex>
+        </Flex>
+        <Divider mb={5} color={BOX_BORDER_COLOR} />
+        {renderContent()}
+      </Box>
+    </Box>
+  );
 };
 
 export default ManageVaccination;

@@ -8,10 +8,9 @@ import GenericForm from "../../../commons/GenericForm";
 import CustomSpinner from "../../../commons/CustomSpinner";
 import useToastCustom from "../../../../hooks/useToast";
 import { fetchCitizenById } from "../../../../services/firebase";
-import { EDIT_CITIZEN } from "../../../../constant";
+import { EDIT_CITIZEN, MANAGE_CITIZEN } from "../../../../constant";
 import { citizenFormConfigs, paths } from "../../../../configs";
 import { editCitizen } from "../../../../services/firebase";
-import { DASH_BOARD } from "../../../../constant";
 import { getFormFields } from "../../../../utils";
 
 const EditCitizen = () => {
@@ -72,7 +71,7 @@ const EditCitizen = () => {
     const editedValues = _.mapValues(fields, "value");
     try {
       await editCitizen(citizenId, editedValues);
-      navigate(paths[DASH_BOARD].path);
+      navigate(paths[MANAGE_CITIZEN].path);
       toast({
         title: "Citizen edited",
         description: "Citizen has been edited successfully",

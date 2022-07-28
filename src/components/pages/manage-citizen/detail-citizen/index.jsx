@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Flex, Heading } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
-import useToastCustom from "../../../../hooks/useToast";
 import _ from "lodash";
 
+import useToastCustom from "../../../../hooks/useToast";
 import InformationCard from "../../../commons/InformationCard";
 import { fetchCitizenById } from "../../../../services/firebase";
 import { citizenFormConfigs } from "../../../../configs";
@@ -30,14 +30,13 @@ const DetailCitizen = () => {
           });
           return;
         }
-        console.log(citizenResult);
         const { avt: rsAvt, ...rsCitizen } = citizenResult;
         setCitizen(rsCitizen);
         setAvt(rsAvt);
       } catch (e) {
         toast({
           title: "Cannot get citizen",
-          description: "There was some errors with given citizens",
+          description: "There was some errors with given citizen",
         });
       }
     };

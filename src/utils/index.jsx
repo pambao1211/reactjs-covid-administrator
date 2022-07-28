@@ -68,7 +68,7 @@ export const getCitizenTableData = (citizens, handleDelete, handleNavigate) => {
   }));
 };
 
-export const getVaccineTableData = (vaccines, handleNavigate) => {
+export const getVaccineTableData = (vaccines, handleDelete, handleNavigate) => {
   return vaccines.map((vaccine) => ({
     img: <Avatar src={vaccine.img} />,
     id: vaccine.id,
@@ -88,10 +88,18 @@ export const getVaccineTableData = (vaccines, handleNavigate) => {
         <Button
           colorScheme="blue"
           onClick={() => {
-            handleNavigate(EDIT_VACCINATION, citizen.id);
+            handleNavigate(EDIT_VACCINATION, vaccine.id);
           }}
         >
           <Icon boxSize={3} as={BsPen} />
+        </Button>
+        <Button
+          colorScheme="red"
+          onClick={() => {
+            handleDelete(vaccine.id, vaccine.code);
+          }}
+        >
+          <Icon boxSize={3} as={BsTrash} />
         </Button>
       </HStack>
     ),

@@ -21,7 +21,6 @@ const GenericForm = ({
   const ref = useRef(null);
 
   const renderFields = () => {
-    console.log(formConfigs);
     return formConfigs.map((field) => {
       const { name, label, fieldType = "text", options = [] } = field;
       return (
