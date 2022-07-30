@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Flex } from "@chakra-ui/react";
+import { Button, Flex } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 import _ from "lodash";
 
@@ -14,12 +14,12 @@ const DetailCitizen = () => {
   const toast = useToastCustom();
   const { citizenId } = useParams();
   const [citizen, setCitizen] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [avt, setAvt] = useState(null);
   const [fields, setFields] = useState(getFormFields(citizenFormConfigs));
+  const [vaccines, setVaccines] = useState([]);
 
   useEffect(() => {
-    setIsLoading(true);
     const initialization = async () => {
       try {
         const citizenResult = await fetchCitizenById(citizenId);
@@ -30,17 +30,19 @@ const DetailCitizen = () => {
           });
           return;
         }
-        const { avt: rsAvt, ...rsCitizen } = citizenResult;
+        const { avt: rsAvt, doses, ...rsCitizen } = citizenResult;
         setCitizen(rsCitizen);
         setAvt(rsAvt);
+        setVaccines(doses);
       } catch (e) {
         toast({
           title: "Cannot get citizen",
           description: "There was some errors with given citizen",
+          status: "Error",
         });
       }
+      setIsLoading(false);
     };
-    setIsLoading(false);
     initialization();
   }, []);
 
@@ -60,9 +62,9 @@ const DetailCitizen = () => {
       </Flex>
     );
   }
-
   return (
     <InformationCard
+      vaccines={vaccines}
       formValues={fields}
       avt={avt}
       setAvt={setAvt}

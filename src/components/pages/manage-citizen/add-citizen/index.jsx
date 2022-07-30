@@ -1,22 +1,51 @@
-import React, { useState } from "react";
-import { Flex } from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import { Avatar, Flex, Box } from "@chakra-ui/react";
+import { CUIAutoComplete } from "chakra-ui-autocomplete";
+import _ from "lodash";
 
 import { ADD_CITIZEN } from "../../../../constant";
-import { addCitizen } from "../../../../services/firebase";
-import { citizenFormConfigs, paths } from "../../../../configs";
-import { getInitialFormValues, getFormFields } from "../../../../utils";
+import {
+  addCitizen,
+  createVaccineRef,
+  fetchVaccines,
+} from "../../../../services/firebase";
+import {
+  citizenFormConfigs,
+  NAVBAR_PATTERN_COLOR,
+  paths,
+} from "../../../../configs";
+import {
+  getInitialFormValues,
+  getFormFields,
+  vaccineToVaccineSelector,
+  customSelectionRender,
+} from "../../../../utils";
 import GenericForm from "../../../commons/GenericForm";
 import InformationCard from "../../../commons/InformationCard";
 import useToastCustom from "../../../../hooks/useToast";
 import { MANAGE_CITIZEN } from "../../../../constant";
 import { useNavigate } from "react-router-dom";
+import CustomSpinner from "../../../commons/CustomSpinner";
 
 const AddCitizen = () => {
   const navigate = useNavigate();
   const toast = useToastCustom();
   const [fields, setFields] = useState(getFormFields(citizenFormConfigs));
   const [avt, setAvt] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
+  const [pickerItems, setPickerItems] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const init = async () => {
+      const rsVaccines = await fetchVaccines();
+      const mappedVaccines = vaccineToVaccineSelector(rsVaccines);
+      setPickerItems(mappedVaccines);
+    };
+    setIsLoading(false);
+    init();
+  }, []);
 
   const handleChange = (keyChange, value) => {
     setFields((pre) => {
@@ -25,9 +54,12 @@ const AddCitizen = () => {
   };
 
   const handleSubmit = async (values) => {
-    setIsLoading(true);
+    setIsSubmitLoading(true);
     try {
-      await addCitizen({ ...values, avt: avt });
+      const vaccinesRefs = selectedItems.map((vaccine) =>
+        createVaccineRef(vaccine.id)
+      );
+      await addCitizen({ ...values, avt: avt, doses: vaccinesRefs });
       toast({
         title: "Added citizen",
         description: "Citizen is successfully added",
@@ -40,8 +72,27 @@ const AddCitizen = () => {
         status: "error",
       });
     }
-    setIsLoading(false);
+    setIsSubmitLoading(false);
   };
+
+  const handleSelectedItemsChange = (selectedItems) => {
+    if (selectedItems) {
+      const newSelectedItem = _.cloneDeep(selectedItems);
+      _.each(newSelectedItem, (item, index) => {
+        item.label = `${index + 1}: ${item.vaccineName}`;
+        item.value = `${index + 1}: ${item.vaccineName}`;
+      });
+      setSelectedItems(newSelectedItem);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <Flex h="100%" w="100%" align="center" justify="center">
+        <CustomSpinner />
+      </Flex>
+    );
+  }
 
   return (
     <Flex h="100%" w="100%">
@@ -49,11 +100,31 @@ const AddCitizen = () => {
         initialFormValues={getInitialFormValues(citizenFormConfigs)}
         handleChange={handleChange}
         handleSubmit={handleSubmit}
-        isLoading={isLoading}
+        isSubmitLoading={isSubmitLoading}
         heading={paths[ADD_CITIZEN].label}
         formConfigs={citizenFormConfigs}
+      >
+        <CUIAutoComplete
+          tagStyleProps={{ bg: NAVBAR_PATTERN_COLOR }}
+          highlightItemBg={NAVBAR_PATTERN_COLOR}
+          disableCreateItem
+          hideToggleButton
+          label="Doses"
+          placeholder="Type to Search for a vaccine"
+          items={pickerItems}
+          selectedItems={selectedItems}
+          itemRenderer={customSelectionRender}
+          onSelectedItemsChange={(changes) => {
+            handleSelectedItemsChange(changes.selectedItems);
+          }}
+        />
+      </GenericForm>
+      <InformationCard
+        vaccines={selectedItems}
+        formValues={fields}
+        avt={avt}
+        setAvt={setAvt}
       />
-      <InformationCard formValues={fields} avt={avt} setAvt={setAvt} />
     </Flex>
   );
 };

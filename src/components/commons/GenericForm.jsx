@@ -14,27 +14,33 @@ const GenericForm = ({
   initialFormValues,
   handleChange,
   handleSubmit,
-  isLoading,
+  isSubmitLoading,
   heading,
   formConfigs,
+  children,
 }) => {
   const ref = useRef(null);
 
   const renderFields = () => {
-    return formConfigs.map((field) => {
-      const { name, label, fieldType = "text", options = [] } = field;
-      return (
-        <GridItem colSpan={1}>
-          <Field
-            name={name}
-            label={label}
-            type={fieldType}
-            options={options}
-            component={renderField}
-          />
-        </GridItem>
-      );
-    });
+    return _.chain(formConfigs)
+      .filter((item) => {
+        return !item.isHidden;
+      })
+      .map((field) => {
+        const { name, label, fieldType = "text", options = [] } = field;
+        return (
+          <GridItem key={name} colSpan={1}>
+            <Field
+              name={name}
+              label={label}
+              type={fieldType}
+              options={options}
+              component={renderField}
+            />
+          </GridItem>
+        );
+      })
+      .value();
   };
 
   const validate = (values) => {
@@ -46,7 +52,7 @@ const GenericForm = ({
   };
 
   return (
-    <Flex w="60%" direction="column" align="center" justify="center">
+    <Flex p={5} w="60%" direction="column" align="center" justify="center">
       <Flex h="20%">
         <Heading color={TITLE_INFO_COLOR}>{heading}</Heading>
       </Flex>
@@ -65,12 +71,13 @@ const GenericForm = ({
             <Grid h="100%" templateColumns="repeat(2, 1fr)" gap={4}>
               {renderFields()}
             </Grid>
+            {children}
             <Button
               mt={5}
               colorScheme={PRIMARY_COLOR}
               w="100%"
               type="submit"
-              isLoading={isLoading}
+              isLoading={isSubmitLoading}
             >
               Submit
             </Button>

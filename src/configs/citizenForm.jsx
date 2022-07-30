@@ -56,6 +56,6 @@ export const citizenFormConfigs = [
     name: "doses",
     label: "Doses",
     icon: GiLoveInjection,
-    fieldType: "number",
+    isHidden: true,
   },
 ];

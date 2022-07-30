@@ -20,7 +20,10 @@ const fetchCitizensById = async (searchTerm) => {
     where("idNumber", "==", searchTerm)
   );
   const rs = await getDocs(q);
-  rs.forEach((citizen) => citizens.push({ ...citizen.data(), id: citizen.id }));
+  rs.forEach((citizen) => {
+    const { doses } = citizen.data();
+    citizens.push({ ...citizen.data(), id: citizen.id, doses: doses.length });
+  });
   return citizens;
 };
 
@@ -31,7 +34,10 @@ const fetchCitizensByFirstName = async (searchTerm) => {
     where("firstName", "==", searchTerm)
   );
   const rs = await getDocs(q);
-  rs.forEach((citizen) => citizens.push({ ...citizen.data(), id: citizen.id }));
+  rs.forEach((citizen) => {
+    const { doses } = citizen.data();
+    citizens.push({ ...citizen.data(), id: citizen.id, doses: doses.length });
+  });
   return citizens;
 };
 
@@ -42,7 +48,10 @@ const fetchVaccinesByName = async (searchTerm) => {
     where("vaccineName", "==", searchTerm)
   );
   const rs = await getDocs(q);
-  rs.forEach((vaccine) => vaccines.push({ ...vaccine.data(), id: vaccine.id }));
+  rs.forEach((vaccine) => {
+    const { doses } = vaccine.data();
+    vaccines.push({ ...vaccine.data(), id: vaccine.id });
+  });
   return vaccines;
 };
 
@@ -58,7 +67,20 @@ export const fetchCitizenById = async (citizenId) => {
   const docRef = doc(db, "citizens", citizenId);
   const citizen = await getDoc(docRef);
   if (citizen.exists()) {
-    return citizen.data();
+    const citizenDto = citizen.data();
+    const { doses } = citizenDto;
+    const mappedDoses = await Promise.all(
+      _.map(doses, async (vaccine, index) => {
+        const data = await getDoc(doc(db, vaccine.path));
+        const dataRs = data.data();
+        return {
+          ...dataRs,
+          id: data.id,
+          label: `${index + 1} : ${dataRs.vaccineName}`,
+        };
+      })
+    );
+    return { ...citizenDto, doses: mappedDoses };
   }
   return null;
 };
@@ -71,7 +93,12 @@ export const fetchCitizens = async () => {
   const citizens = [];
   const rs = await getDocs(collection(db, "citizens"));
   rs.forEach((citizen) => {
-    citizens.push({ ...citizen.data(), id: citizen.id });
+    const { doses } = citizen.data();
+    citizens.push({
+      ...citizen.data(),
+      id: citizen.id,
+      doses: doses.length,
+    });
   });
   return citizens;
 };
@@ -126,4 +153,8 @@ export const addVaccine = async (vaccine) => {
 
 export const deleteVaccination = async (vaccineId) => {
   await deleteDoc(doc(db, "vaccines", vaccineId));
+};
+
+export const createVaccineRef = (vaccineId) => {
+  return doc(db, `vaccines/${vaccineId}`);
 };

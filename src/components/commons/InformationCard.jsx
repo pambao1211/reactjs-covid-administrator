@@ -17,7 +17,7 @@ import {
   DETAIL_INFO_COLOR,
   BOX_BORDER_COLOR,
 } from "../../configs";
-import { renderGender, toLocaleDate } from "../../utils";
+import { renderGender, renderVaccineTags, toLocaleDate } from "../../utils";
 
 const field = ({ label, icon, value }) => {
   return (
@@ -38,7 +38,13 @@ const field = ({ label, icon, value }) => {
   );
 };
 
-const InformationCard = ({ formValues, avt, setAvt, isSingleView = false }) => {
+const InformationCard = ({
+  formValues,
+  avt,
+  setAvt,
+  isSingleView = false,
+  vaccines,
+}) => {
   useEffect(() => {
     if (avt) {
       return;
@@ -60,6 +66,10 @@ const InformationCard = ({ formValues, avt, setAvt, isSingleView = false }) => {
           fieldInfo = { ...fieldInfo, value: renderGender(genderVal) };
           result.push(field(fieldInfo));
           break;
+        case "doses":
+          fieldInfo = { ...fieldInfo, value: renderVaccineTags(vaccines) };
+          result.push(field(fieldInfo));
+          break;
         default:
           result.push(field(fieldInfo));
       }
@@ -73,7 +83,7 @@ const InformationCard = ({ formValues, avt, setAvt, isSingleView = false }) => {
       p={5}
       align="center"
       h="100%"
-      w={isSingleView ? "50%" : "40%"}
+      w={isSingleView ? "70%" : "60%"}
       borderLeftWidth={isSingleView ? 0 : 3}
       borderColor={BOX_BORDER_COLOR}
     >
