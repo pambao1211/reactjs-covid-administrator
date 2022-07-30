@@ -34,8 +34,10 @@ const convertStatus = (doses) => {
     case 0:
       return <Badge colorScheme="red">Unprotected</Badge>;
     case 1:
-      return <Badge colorScheme="yellow">Partial protected</Badge>;
+      return <Badge colorScheme="orange">Partial protected</Badge>;
     case 2:
+      return <Badge colorScheme="yellow">Highly protected</Badge>;
+    case 3:
       return <Badge colorScheme="green">Fully protected</Badge>;
     default:
       return <Badge colorScheme="blue">Unknown</Badge>;
