@@ -103,6 +103,21 @@ export const fetchCitizens = async () => {
   return citizens;
 };
 
+export const fetchCitizensIncludeVaccineId = async () => {
+  const citizens = [];
+  const rs = await getDocs(collection(db, "citizens"));
+  rs.forEach((citizen) => {
+    const { doses } = citizen.data();
+    const mappedDoses = doses.map((dose) => dose.id);
+    citizens.push({
+      ...citizen.data(),
+      id: citizen.id,
+      doses: mappedDoses,
+    });
+  });
+  return citizens;
+};
+
 export const fetchCitizensByIdOrName = async (searchTerm) => {
   const idResults = await fetchCitizensById(searchTerm);
   const firstNameResults = await fetchCitizensByFirstName(searchTerm);

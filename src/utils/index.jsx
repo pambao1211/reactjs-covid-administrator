@@ -18,8 +18,13 @@ import {
   DETAIL_VACCINATION,
   EDIT_CITIZEN,
   EDIT_VACCINATION,
+  FULLY_PROTECTED,
   GENDER_FEMALE,
   GENDER_MALE,
+  HIGHLY_PROTECTED,
+  PARTIAL_PROTECTED,
+  SUPER_PROTECTED,
+  UNPROTECTED,
 } from "../constant";
 import {
   paths,
@@ -28,22 +33,29 @@ import {
   PRIMARY_PATTERN_COLOR,
 } from "../configs";
 import _ from "lodash";
+import { vaccineStatus } from "../configs";
 
 const convertStatus = (doses) => {
+  let configs = {};
   switch (doses) {
     case 0:
-      return <Badge colorScheme="red">Unprotected</Badge>;
+      configs = vaccineStatus[UNPROTECTED];
+      break;
     case 1:
-      return <Badge colorScheme="orange">Partial protected</Badge>;
+      configs = vaccineStatus[PARTIAL_PROTECTED];
+      break;
     case 2:
-      return <Badge colorScheme="yellow">Highly protected</Badge>;
+      configs = vaccineStatus[HIGHLY_PROTECTED];
+      break;
     case 3:
-      return <Badge colorScheme="green">Fully protected</Badge>;
+      configs = vaccineStatus[FULLY_PROTECTED];
+      break;
     default:
-      return <Badge colorScheme="blue">Unknown</Badge>;
+      configs = vaccineStatus[SUPER_PROTECTED];
   }
+  return <Badge colorScheme={configs.color}>{configs.label}</Badge>;
 };
-
+// TODO: Separate this file into smaller files
 export const getCitizenTableData = (citizens, handleDelete, handleNavigate) => {
   return citizens.map((citizen) => ({
     avt: <Avatar src={citizen.avt} />,
@@ -218,4 +230,159 @@ export const customSelectionRender = (value) => {
       <Box ml={2}>{value.label}</Box>
     </Flex>
   );
+};
+
+export const extractStatusFromCitizens = (citizens) => {
+  const dosesData = _.chain(citizens)
+    .countBy((citizen) => {
+      if (citizen.doses >= SUPER_PROTECTED) {
+        return SUPER_PROTECTED;
+      }
+      return citizen.doses;
+    })
+    .values()
+    .value();
+  const filteredStatus = _.chain(vaccineStatus)
+    .filter((status) => !status.isHidden)
+    .mapValues((status) => {
+      return {
+        label: status.label,
+        chartBackgroundColor: status.chartBackgroundColor,
+        chartBorderColor: status.chartBorderColor,
+      };
+    })
+    .values()
+    .value();
+  const labels = _.chain(filteredStatus)
+    .mapValues((status) => status.label)
+    .values()
+    .value();
+  const backgroundColor = _.chain(filteredStatus)
+    .mapValues((status) => status.chartBackgroundColor)
+    .values()
+    .value();
+  const borderColor = _.chain(filteredStatus)
+    .mapValues((status) => status.chartBorderColor)
+    .values()
+    .value();
+  return {
+    labels,
+    datasets: [
+      {
+        data: dosesData,
+        backgroundColor,
+        borderColor,
+        borderWidth: 2,
+      },
+    ],
+  };
+};
+
+export const extractVaccineFromCitizens = (citizensWithVaccine, vaccines) => {
+  const vaccinesCounts = _.chain(vaccines)
+    .keyBy("id")
+    .mapValues((vaccine) => 0)
+    .value();
+  const vaccineData = _.chain(citizensWithVaccine)
+    .mapValues("doses")
+    .values()
+    .value();
+  _.each(vaccineData, (citizenVaccines) => {
+    _.each(citizenVaccines, (vaccine) => {
+      vaccinesCounts[vaccine] += 1;
+    });
+  });
+  const labels = _.chain(vaccines)
+    .mapValues((vaccine) => vaccine.vaccineName)
+    .values()
+    .value();
+  const colorConfigs = _.chain(vaccineStatus)
+    .shuffle()
+    .mapValues((status) => {
+      return {
+        backgroundColor: status.chartBackgroundColor,
+        borderColor: status.chartBorderColor,
+      };
+    })
+    .values()
+    .value();
+  const backgroundColor = _.chain(colorConfigs)
+    .mapValues((status) => status.backgroundColor)
+    .values()
+    .value();
+  const borderColor = _.chain(colorConfigs)
+    .mapValues((status) => status.borderColor)
+    .values()
+    .value();
+  const vaccineConvertedData = _.values(vaccinesCounts);
+  return {
+    labels,
+    datasets: [
+      {
+        data: vaccineConvertedData,
+        backgroundColor,
+        borderColor,
+        borderWidth: 2,
+      },
+    ],
+  };
+};
+
+export const extractDosesOfTypeOnStatusDataSet = (
+  citizensWithVaccine,
+  vaccines
+) => {
+  const initialDoseByStatus = _.chain(vaccineStatus)
+    .filter((status) => !status.isHidden)
+    .mapValues((status) => 0)
+    .values()
+    .value();
+  const vaccineColorConfigs = _.chain(vaccineStatus)
+    .shuffle()
+    .mapValues((vaccine) => {
+      return {
+        backgroundColor: vaccine.chartBackgroundColor,
+        borderColor: vaccine.chartBorderColor,
+      };
+    })
+    .value();
+  const labels = _.chain(vaccineStatus)
+    .filter((status) => !status.isHidden)
+    .mapValues((status) => status.label)
+    .values()
+    .value();
+  const vaccineData = _.chain(vaccines)
+    .mapValues((vaccine, index) => {
+      return {
+        id: vaccine.id,
+        label: vaccine.vaccineName,
+        backgroundColor: vaccineColorConfigs[index].borderColor,
+        data: [...initialDoseByStatus],
+      };
+    })
+    .values()
+    .keyBy("id")
+    .value();
+  _.chain(citizensWithVaccine)
+    .mapValues((citizen) => {
+      return {
+        ...citizen,
+        status:
+          citizen.doses.length >= SUPER_PROTECTED
+            ? SUPER_PROTECTED
+            : citizen.doses.length,
+      };
+    })
+    .values()
+    .each((citizen) => {
+      _.each(citizen.doses, (vaccineId) => {
+        vaccineData[vaccineId].data[citizen.status] += 1;
+      });
+    })
+    .value();
+  const finalData = _.values(vaccineData);
+  return {
+    labels,
+    datasets: finalData,
+  };
 };
