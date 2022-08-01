@@ -4,20 +4,21 @@
 
 ### Overview:
 
--   Web application for government to management vaccination status & their related information(has been positive or not) for their citizens.
--   Features:
-    -   Admin Login / Logout
-    -   Add userdata:
-        -   Name, dob, address, tel, gender
-        -   Vaccine doses:
-            -   dose index, type, place...
-    -   Update userinfo:
-    -   Chart analysis
-    -   User certification
--   Techstacks:
-    -   React (ChakraUI, Redux, React-hook, Vitejs, ...)
-    -   Nodejs (chua biet)
-    -   Mongodb
+- Web application for government to management vaccination status & their
+  related information(has been positive or not) for their citizens.
+- Features:
+    - Admin Login / Logout
+    - Add userdata:
+        - Name, dob, address, tel, gender
+        - Vaccine doses:
+            - dose index, type, place...
+    - Update userinfo:
+    - Chart analysis
+    - User certification
+- Techstacks:
+    - React (ChakraUI, Redux, React-hook, Vitejs, ...)
+    - Nodejs
+    - Mongodb
 
 ### Todo
 

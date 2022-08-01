@@ -38,7 +38,7 @@ const Footer = ({ ...props }) => {
         <Heading size="md">CovidCMS</Heading>
       </Flex>
       <Box w="50vw" textAlign="center">
-        © 2022 Tuong Thai Tan. All rights reverved
+        © 2022 Pambao. All rights reverved
       </Box>
       <HStack>
         <SocialMediaBtn icon={BsYoutube} />
