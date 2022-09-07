@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -9,30 +9,30 @@ import {
   InputRightElement,
   Icon,
   Input,
-} from "@chakra-ui/react";
-import { Table } from "react-chakra-pagination";
-import { AiOutlineInbox } from "react-icons/ai";
-import { BsSearch } from "react-icons/bs";
-import { HiOutlineDocumentAdd } from "react-icons/hi";
-import { Link, useNavigate } from "react-router-dom";
+} from '@chakra-ui/react';
+import { Table } from 'react-chakra-pagination';
+import { AiOutlineInbox } from 'react-icons/ai';
+import { BsSearch } from 'react-icons/bs';
+import { HiOutlineDocumentAdd } from 'react-icons/hi';
+import { Link, useNavigate } from 'react-router-dom';
 
-import CustomSpinner from "../../commons/CustomSpinner";
+import CustomSpinner from '../../commons/CustomSpinner';
 import {
   fetchCitizens,
   fetchCitizensByIdOrName,
-} from "../../../services/firebase";
+} from '../../../services/firebase';
 import {
   PRIMARY_COLOR,
   citizenTableColumns,
   TITLE_INFO_COLOR,
   BOX_BORDER_COLOR,
   paths,
-} from "../../../configs";
-import { getCitizenTableData } from "../../../utils";
-import { useModal } from "../../../contexts/modal-context";
-import useToastCustom from "../../../hooks/useToast";
-import { deleteCitizen } from "../../../services/firebase";
-import { ADD_CITIZEN } from "../../../constant";
+} from '../../../configs';
+import { getCitizenTableData } from '../../../utils';
+import { useModal } from '../../../contexts/modal-context';
+import useToastCustom from '../../../hooks/useToast';
+import { deleteCitizen } from '../../../services/firebase';
+import { ADD_CITIZEN } from '../../../constant';
 
 const ManageCitizen = () => {
   const navigate = useNavigate();
@@ -41,11 +41,11 @@ const ManageCitizen = () => {
 
   const [tableData, setTableData] = useState([]);
   const [page, setPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (searchTerm === "") {
+    if (searchTerm === '') {
       fetchAll();
       return;
     }
@@ -68,7 +68,7 @@ const ManageCitizen = () => {
   };
 
   const reloadTable = () => {
-    if (searchTerm === "") {
+    if (searchTerm === '') {
       fetchAll();
       return;
     }
@@ -85,21 +85,21 @@ const ManageCitizen = () => {
 
   const handleDelete = (citizenId, citizenIdNumber) => {
     openModal({
-      header: "Delete citizen",
+      header: 'Delete citizen',
       body: `Are you sure to delete citizen with id number ${citizenIdNumber}?`,
       actionFunc: async () => {
         setIsActionLoading(true);
         try {
           await deleteCitizen(citizenId);
           toast({
-            title: "Deleted successfully",
-            description: "Citizen has been deleted",
+            title: 'Deleted successfully',
+            description: 'Citizen has been deleted',
           });
           reloadTable();
         } catch (e) {
           toast({
-            title: "Deleted failed",
-            description: "Failed to delete citizen",
+            title: 'Deleted failed',
+            description: 'Failed to delete citizen',
           });
         } finally {
           setIsActionLoading(false);
@@ -127,7 +127,7 @@ const ManageCitizen = () => {
         page={page}
         emptyData={{
           icon: AiOutlineInbox,
-          text: "No result found",
+          text: 'No result found',
         }}
         onPageChange={(page) => setPage(page)}
       />
@@ -162,6 +162,7 @@ const ManageCitizen = () => {
         <Divider mb={5} color={BOX_BORDER_COLOR} />
         {renderContent()}
       </Box>
+      <div>Hello World</div>
     </Box>
   );
 };
